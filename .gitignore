@@ -1,39 +1,50 @@
-# Byte-compiled / optimized / DLL files
+# --- Python Standard ---
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.python-version
 
-# Python virtual environments
+# --- Virtual Environments ---
 .venv/
 venv/
-ENV/
 env/
+bin/
+lib/
+develop-eggs/
+dist/
+build/
 
+# --- Environment variables ---
+.env
+.env.*
+!.env.example  # Recomendado: Crea un .env.example sin contraseñas para el cliente
 
-# IDEs
+# --- IDEs ---
 .idea/
 .vscode/
 *.swp
 *.swo
-*~
+*.sublime-project
 
-# Pytest
+# --- Tools and testing ---
 .pytest_cache/
 .coverage
 htmlcov/
-*.cover
+.nox/
+.tox/
+.mypy_cache/
+.ruff_cache/
 
-# Database
+# --- Data bases ---
 *.db
 *.sqlite
 *.sqlite3
+# Si usas dumps de postgres localmente
+*.sql
+*.dump
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# OS
+# --- OS ---
 .DS_Store
 Thumbs.db
+desktop.ini

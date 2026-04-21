@@ -9,3 +9,13 @@ GET http://127.0.0.1:8000/hello/User
 Accept: application/json
 
 ###
+
+GET 127.0.0.1:8000/users/
+Accept: application/json
+
+###
+POST 127.0.0.1:8000/users/
+Content-Type: application/json
+
+###
+GET 127.0.0.1:8000/health-check/db
