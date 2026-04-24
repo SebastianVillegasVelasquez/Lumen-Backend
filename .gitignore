@@ -26,6 +26,8 @@ build/
 *.swp
 *.swo
 *.sublime-project
+*.idea
+*.iml*
 
 # --- Tools and testing ---
 .pytest_cache/

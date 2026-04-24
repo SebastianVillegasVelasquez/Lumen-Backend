@@ -6,12 +6,14 @@ from app.db.database import get_db
 
 router = APIRouter(prefix="/health-check", tags=["health-check"])
 
+
 @router.get("/")
 async def health_check() -> dict[str, str]:
     """
     Only test the API server's health without checking the database connection.
     """
     return {"status": "ok"}
+
 
 @router.get("/db")
 async def health_check(db: AsyncSession = Depends(get_db)):

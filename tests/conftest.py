@@ -1,20 +1,76 @@
 import pytest
 
 from app.schemas.users.user import User
+from app.enums import Language, EnglishLevel
 
 
 @pytest.fixture
 def load_fake_user() -> User:
     from app.enums.enums import UserRole
+
     return User(
         email="jhondoe@example.com",
         recovery_email=None,
         name="Jhon",
         last_name="Doe",
         password="securepassword",
-        role=UserRole.STUDENT
+        role=UserRole.STUDENT,
     )
 
+
+@pytest.fixture
+def cohort_data():
+    return {
+        "cohort_name": "Test Cohort",
+        "component_id": 1,
+        "level_id": 1
+    }
+
+
+@pytest.fixture
+def component_data():
+    return {
+        "component_name": "Test Component",
+        "language": Language.ENGLISH
+    }
+
+
+@pytest.fixture
+def enrollment_data():
+    return {
+        "user_id": 1,
+        "cohort_id": 1,
+        "is_active": True
+    }
+
+
+@pytest.fixture
+def level_data():
+    return {
+        "level_name": EnglishLevel.A1
+    }
+
+
+@pytest.fixture
+def scorm_progress_data():
+    return {
+        "user_id": 1,
+        "unit_id": 1,
+        "score": 75.0,
+        "status": "in progress",
+        "total_time": "00:30:00",
+        "suspend_data": None
+    }
+
+
+@pytest.fixture
+def unit_data():
+    return {
+        "title": "Test Unit",
+        "description": "A test unit",
+        "scorm_url": "http://example.com/scorm",
+        "level_id": 1
+    }
 
 
 # TEST_DATABASE_URL = settings.DATABASE_URL + "_test"

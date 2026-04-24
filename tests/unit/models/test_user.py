@@ -17,26 +17,26 @@ class TestUser:
 
     def test_invalid_email(self, load_fake_user: User):
         user_dict = load_fake_user.model_dump()
-        user_dict['email'] = 'jhondoeexample.com'
+        user_dict["email"] = "jhondoeexample.com"
         with pytest.raises(ValidationError):
             User.model_validate(user_dict)
 
     def test_password_too_short(self, load_fake_user: User):
         user_dict = load_fake_user.model_dump()
-        user_dict['password'] = '123'
+        user_dict["password"] = "123"
         with pytest.raises(ValidationError):
             User.model_validate(user_dict)
 
     def test_name_too_short(self, load_fake_user: User):
         user_dict = load_fake_user.model_dump()
-        user_dict['name'] = 'J'
+        user_dict["name"] = "J"
         with pytest.raises(ValidationError):
             User.model_validate(user_dict)
 
     def test_name_min_length_boundary(self, load_fake_user: User):
         user_dict = load_fake_user.model_dump()
-        user_dict['name'] = 'Jo'
-        assert User.model_validate(user_dict).name == 'Jo'
+        user_dict["name"] = "Jo"
+        assert User.model_validate(user_dict).name == "Jo"
 
     def test_optional_recovery_email(self, load_fake_user: User):
         expected = None
