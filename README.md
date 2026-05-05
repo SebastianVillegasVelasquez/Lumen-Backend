@@ -1,4 +1,4 @@
-# Fontur Learning Management System (LMS) & AI Service
+# Lumen Learning Management System (LMS) & AI Service
 
 ## Introduction
 This project is a specialized educational platform developed for **Fontur** (Fondo Nacional de Turismo de Colombia). The system is designed to manage and deliver tourism-related training through a modern, scalable architecture. It features a bilingual learning environment (English and Spanish) and integrates Local Large Language Models (LLM) to provide intelligent feedback and automated content processing.
@@ -31,7 +31,7 @@ To run commands within the project's isolated environment, you can either prefix
 poetry shell
 
 # Option B: Run a command without entering the shell
-poetry run uvicorn app.main:app --reload
+poetry run uvicorn src.main:src --reload
 ```
 
 ### 4. Configuration

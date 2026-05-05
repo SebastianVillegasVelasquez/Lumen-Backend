@@ -6,15 +6,23 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-# Import the models here to ensure they are registered with Alembic
-from app.models import User, Cohort, Component, Level, Unit, ScormProgress, Enrollment
+# Import the model here to ensure they are registered with Alembic
+from src.model import (
+    User,
+    Course,
+    Module,
+    Section,
+    Lesson,
+    Enrollment,
+    Progress,
+)
 
 """
 The following imports are required for Alembic to work properly.
 Do not change the imports if you are not sure what they do.
 """
-from app.core.config import settings
-from app.db.base import Base
+from src.core.config import settings
+from src.db.base import Base
 
 config = context.config
 

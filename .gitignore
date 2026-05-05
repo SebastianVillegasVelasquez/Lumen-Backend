@@ -18,16 +18,18 @@ build/
 # --- Environment variables ---
 .env
 .env.*
-!.env.example  # Recomendado: Crea un .env.example sin contraseñas para el cliente
+!.env.example
 
 # --- IDEs ---
 .idea/
+.idea
 .vscode/
 *.swp
 *.swo
 *.sublime-project
 *.idea
 *.iml*
+.junie
 
 # --- Tools and testing ---
 .pytest_cache/
@@ -50,3 +52,9 @@ htmlcov/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# --- test HTTPS ---
+test_main.http
+*.http
+
+#

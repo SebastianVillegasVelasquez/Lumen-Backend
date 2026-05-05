@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 
-from app.api.routes.users import user_api
-from app.api.routes.health_check import health_check
+from src.api.routes.users import user_api
+from src.api.routes.health_check import health_check
 
 app = FastAPI()
 
 """
-All the routes are coming from the app.api.routes package.
+All the routes are coming from the src.api.routes package.
 Do not change the order of the routes, as it may cause issues with the routing.
 Do not add any routes here, unless you know what you are doing.
 """

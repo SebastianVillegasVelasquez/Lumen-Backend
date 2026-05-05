@@ -1,1 +1,0 @@
-# ScormProgress schemas package
