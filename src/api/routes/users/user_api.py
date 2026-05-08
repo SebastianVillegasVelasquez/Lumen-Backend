@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from data import UserRepository
+from src.data import UserRepository
 from src.db.database import get_db
 from src.schema import UserCreate, UserResponse, UserPatch
 from src.service import UserService
@@ -29,7 +29,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def create_user(
-        user: UserCreate = Body(...), db: AsyncSession = Depends(get_db)
+    user: UserCreate = Body(...), db: AsyncSession = Depends(get_db)
 ) -> UserResponse:
     """
     This endpoint handles the request to create a new user.
@@ -57,8 +57,8 @@ async def create_user(
     summary="Get user by ID",
 )
 async def get_user(
-        user_id: int,
-        db: AsyncSession = Depends(get_db),
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
 ) -> UserResponse:
     """
     Retrieve a user by its unique identifier.
@@ -85,8 +85,8 @@ async def get_user(
     summary="Delete user",
 )
 async def delete_user(
-        user_id: int,
-        db: AsyncSession = Depends(get_db),
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
 ) -> str:
     """
     Soft delete a user by its unique identifier.
@@ -102,7 +102,7 @@ async def delete_user(
         HTTPException: If the user does not exist or deletion fails.
     """
     repository = UserRepository(db)
-    return await UserService(repository).delete_user_by_id(user_id=user_id)
+    return await UserService(repository).delete_user(user_id=user_id)
 
 
 @router.patch(
@@ -112,9 +112,9 @@ async def delete_user(
     summary="Update user partially",
 )
 async def update_user(
-        user_id: int,
-        new_data: UserPatch = Body(...),
-        db: AsyncSession = Depends(get_db),
+    user_id: int,
+    new_data: UserPatch = Body(...),
+    db: AsyncSession = Depends(get_db),
 ) -> UserResponse:
     """
     Partially update user information.

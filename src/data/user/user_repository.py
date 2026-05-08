@@ -83,7 +83,9 @@ class UserRepository:
         Returns:
             User | None: User entity if found, otherwise None.
         """
-        return await self.db.get(User, user_id)
+        query = select(User).where(User.user_id == user_id)
+        user = await self.db.execute(query)
+        return user.scalar()
 
     async def soft_delete(self, user: User) -> None:
         """

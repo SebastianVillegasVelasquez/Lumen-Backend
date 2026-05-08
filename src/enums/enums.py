@@ -8,9 +8,7 @@ class UserRole(Enum):
     PROFESSOR = 3
 
 
-
 class ProgressStatus(Enum):
     NOT_STARTED = 0
     IN_PROGRESS = 1
     COMPLETED = 2
-

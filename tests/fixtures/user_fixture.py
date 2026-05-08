@@ -1,64 +1,82 @@
+from typing import Protocol
+
 import pytest
 
 from src.model import User
 from src.service import UserService
 
 
-class FakeUserRepository():
-    async def get_all(self):
-        return [
-            User(
-                user_id=1,
-                email="sebastian@gmail.com",
-                name="Sebastian",
-                last_name="Villegas",
-            ),
-            User(
-                user_id=2,
-                email="juan@gmail.com",
-                name="Juan",
-                last_name="Perez",
-            )
-        ]
+class UserRepositoryProtocol(Protocol):
+    async def get_all(self) -> list[User]: ...
+    async def add(self, user: User) -> User: ...
+    async def save(self, user: User) -> User: ...
+    async def get_by_id(self, user_id: int) -> User | None: ...
+    async def soft_delete(self, user: User) -> None: ...
+
+
+class FakeUserRepository(UserRepositoryProtocol):
+    def __init__(
+        self,
+        users: list[User] | None = None,
+        exception: Exception | None = None,
+    ):
+        self.users = users or []
+        self.exception = exception
+
+    def _raise_if_needed(self):
+        if self.exception:
+            raise self.exception
+
+    async def get_all(self) -> list[User]:
+        self._raise_if_needed()
+        return self.users
+
+    async def add(self, user: User) -> User:
+        self._raise_if_needed()
+
+        if user.user_id is None:
+            next_id = len(self.users) + 1
+            user.user_id = next_id
+
+        self.users.append(user)
+        return user
+
+    async def save(self, user: User) -> User:
+        self._raise_if_needed()
+        return user
+
+    async def get_by_id(self, user_id: int) -> User | None:
+        self._raise_if_needed()
+
+        return next(
+            (user for user in self.users if user.user_id == user_id),
+            None,
+        )
+
+    async def soft_delete(self, user: User) -> None:
+        self._raise_if_needed()
+        user.is_active = False
+
+
+class MakeUserService(Protocol):
+    def __call__(
+        self,
+        users: list[User] | None = None,
+        exception: Exception | None = None,
+    ) -> UserService: ...
 
 
 @pytest.fixture
-def fake_user_repository():
-    return FakeUserRepository()
+def make_user_service() -> MakeUserService:
+    def _make(
+        users: list[User] | None = None,
+        exception: Exception | None = None,
+    ) -> UserService:
+        repo = FakeUserRepository(
+            users=users,
+            exception=exception,
+        )
 
+        return UserService(repo)
 
-@pytest.fixture
-def fake_user_service(fake_user_repository):
-    from src.service.user.user_service import UserService
-    return UserService(fake_user_repository)
-
-
-class EmptyFakeUserRepository:
-    async def get_all(self):
-        return []
-
-
-@pytest.fixture
-def empty_fake_user_repository():
-    return EmptyFakeUserRepository()
-
-
-@pytest.fixture
-def empty_fake_user_service(empty_fake_user_repository):
-    from src.service.user.user_service import UserService
-    return UserService(empty_fake_user_repository)
-
-
-class BrokenFakeUserRepository:
-    async def get_all(self):
-        raise Exception("Something went wrong")
-
-
-@pytest.fixture
-def broken_fake_user_repository():
-    return BrokenFakeUserRepository()
-
-
-@pytest.fixture
-def broken_fake_user_service(broken_fake_user_repository):
-    return UserService(broken_fake_user_repository)
+    return _make

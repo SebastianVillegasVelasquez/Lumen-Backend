@@ -18,7 +18,7 @@ class UserService:
 
     def __init__(self, repository: UserRepository) -> None:
         """
-        Initialize service with database session.
+        Initialize service with a database session.
 
         Args:
             db (AsyncSession): SQLAlchemy async database session.
@@ -36,8 +36,10 @@ class UserService:
             UserResponse: Created user data.
         """
         new_user = self._convert_to_orm_model(user_data)
-
-        user = await self.repository.add(new_user)
+        try:
+            user = await self.repository.add(new_user)
+        except Exception as e:
+            print(f"Error while add a user. " f"Error: {e} ")
 
         return self._convert_single_user_to_response(user)
 
@@ -75,7 +77,7 @@ class UserService:
 
         return self._convert_single_user_to_response(user)
 
-    async def delete_user_by_id(self, user_id: int) -> str:
+    async def delete_user(self, user_id: int) -> str:
         """
         Soft delete a user by ID.
 

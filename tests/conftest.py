@@ -19,5 +19,3 @@ def load_fake_user() -> UserCreate:
         password="securepassword",
         role=UserRole.STUDENT,
     )
-
-# User service fixtures
