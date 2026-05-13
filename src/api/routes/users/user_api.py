@@ -2,138 +2,122 @@ from fastapi import APIRouter, Body, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.data import UserRepository
 from src.db.database import get_db
-from src.schema import UserCreate, UserResponse, UserPatch
+from src.data import UserCrudRepository
+from src.schema import UserCreate, UserPatch, UserResponse
 from src.service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/", status_code=status.HTTP_200_OK, response_model=list[UserResponse])
-async def get_users(db: AsyncSession = Depends(get_db)):
-    """
-    Retrieve all users from the database.
+def get_user_service(db: AsyncSession = Depends(get_db)) -> UserService:
+    """Provide a fully wired UserCrudService for the current request.
+
+    FastAPI resolves this via Depends, so every endpoint receives
+    a fresh service+repository pair that shares the same db session.
 
     Args:
-        db (AsyncSession): An instance of AsyncSession for database operations.
+        db: Async database session injected by FastAPI.
 
     Returns:
-        list[UserResponse]: A list of UserResponse objects representing the users.
+        Configured UserCrudService instance.
     """
-    repository = UserRepository(db)
-    users = await UserService(repository).get_all_users()
+    return UserService(UserCrudRepository(db))
 
-    return users
+
+# ------------------------------------------------------------------
+# Endpoints
+# ------------------------------------------------------------------
+
+
+@router.get("/", status_code=status.HTTP_200_OK, response_model=list[UserResponse])
+async def get_users(
+    service: UserService = Depends(get_user_service),
+) -> list[UserResponse]:
+    """Retrieve all users.
+
+    Returns:
+        List of UserResponse objects.
+    """
+    return await service.get_all()
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def create_user(
-    user: UserCreate = Body(...), db: AsyncSession = Depends(get_db)
+    user: UserCreate = Body(...),
+    service: UserService = Depends(get_user_service),
 ) -> UserResponse:
-    """
-    This endpoint handles the request to create a new user.
+    """Create a new user.
 
     Args:
-        user (UserCreate): User object to be created.
-        db (AsyncSession): An instance of AsyncSession for database operations.
+        user: User creation payload.
+        service: Injected user service.
+
     Returns:
-        UserResponse: An instance of UserResponse object.
-
+        The created UserResponse.
     """
-
-    repository = UserRepository(db)
-    user_service = UserService(repository)
-
-    user_created = await user_service.create_user(user_data=user)
-
-    return user_created
+    return await service.create(user)
 
 
-@router.get(
-    "/{user_id}",
-    status_code=status.HTTP_200_OK,
-    response_model=UserResponse,
-    summary="Get user by ID",
-)
+@router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user(
     user_id: int,
-    db: AsyncSession = Depends(get_db),
+    service: UserService = Depends(get_user_service),
 ) -> UserResponse:
-    """
-    Retrieve a user by its unique identifier.
+    """Retrieve a user by ID.
 
     Args:
-        user_id (int): Unique identifier of the user.
-        db (AsyncSession): Database session dependency.
+        user_id: Target user primary key.
+        service: Injected user service.
 
     Returns:
-        UserResponse: User information.
+        Matching UserResponse.
 
     Raises:
-        HTTPException: If the user does not exist.
+        HTTPException: 404 if the user does not exist.
     """
-    repository = UserRepository(db)
-
-    return await UserService(repository).get_user_by_id(user_id)
+    return await service.get_by_id(user_id)
 
 
-@router.delete(
-    "/{user_id}",
-    status_code=status.HTTP_200_OK,
-    response_model=str,
-    summary="Delete user",
-)
-async def delete_user(
-    user_id: int,
-    db: AsyncSession = Depends(get_db),
-) -> str:
-    """
-    Soft delete a user by its unique identifier.
-
-    Args:
-        user_id (int): Unique identifier of the user.
-        db (AsyncSession): Database session dependency.
-
-    Returns:
-        str: Operation result message.
-
-    Raises:
-        HTTPException: If the user does not exist or deletion fails.
-    """
-    repository = UserRepository(db)
-    return await UserService(repository).delete_user(user_id=user_id)
-
-
-@router.patch(
-    "/{user_id}",
-    status_code=status.HTTP_200_OK,
-    response_model=UserResponse,
-    summary="Update user partially",
-)
+@router.patch("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def update_user(
     user_id: int,
     new_data: UserPatch = Body(...),
-    db: AsyncSession = Depends(get_db),
+    service: UserService = Depends(get_user_service),
 ) -> UserResponse:
-    """
-    Partially update user information.
+    """Partially update a user.
 
-    Only provided fields will be updated.
+    Only fields present in the request body are modified.
 
     Args:
-        user_id (int): Unique identifier of the user.
-        new_data (UserPatch): Partial user data.
-        db (AsyncSession): Database session dependency.
+        user_id: Target user primary key.
+        new_data: Partial update payload.
+        service: Injected user service.
 
     Returns:
-        UserResponse: Updated user information.
+        Updated UserResponse.
 
     Raises:
-        HTTPException: If the user does not exist.
+        HTTPException: 404 if the user does not exist.
     """
-    repository = UserRepository(db)
-    return await UserService(repository).patch_user(
-        user_id=user_id,
-        new_data=new_data,
-    )
+    return await service.patch(user_id, new_data)
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK, response_model=bool)
+async def delete_user(
+    user_id: int,
+    service: UserService = Depends(get_user_service),
+) -> bool:
+    """Soft-delete a user.
+
+    Args:
+        user_id: Target user primary key.
+        service: Injected user service.
+
+    Returns:
+        True when the deletion succeeds.
+
+    Raises:
+        HTTPException: 404 if the user does not exist.
+    """
+    return await service.delete(user_id)

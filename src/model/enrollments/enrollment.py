@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db import Base
+from src.model import Course, User
 
 
 class Enrollment(Base):
@@ -32,5 +35,5 @@ class Enrollment(Base):
 
     # Relationships to link the enrollment to a user and a cohort
     # This is not a new column, it's just a relationship to access the related user and cohort objects' data easily.
-    course: Mapped["Course"] = relationship(back_populates="enrollments")
-    user: Mapped["User"] = relationship(back_populates="enrollments")
+    course: Mapped[Course] = relationship(back_populates="enrollments")
+    user: Mapped[User] = relationship(back_populates="enrollments")

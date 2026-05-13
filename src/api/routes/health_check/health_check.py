@@ -16,7 +16,10 @@ async def health_check() -> dict[str, str]:
 
 
 @router.get("/db")
-async def health_check(db: AsyncSession = Depends(get_db)):
+async def health_check_db(db: AsyncSession = Depends(get_db)):
+    """
+    Check the API server's health and database connectivity.
+    """
     try:
         # Execute a simple query to check database connectivity
         await db.execute(text("SELECT 1"))
