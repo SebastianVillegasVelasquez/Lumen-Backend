@@ -1,12 +1,20 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from src.db import Base
 from src.enums.enums import ProgressStatus
 
+if TYPE_CHECKING:
+    from src.model.courses.course import Course
+    from src.model.lessons.lesson import Lesson
+    from src.model.users.user import User
+
 
 class Progress(Base):
-
     __tablename__ = "progress"
 
     progress_id: Mapped[int] = mapped_column(primary_key=True)
@@ -25,6 +33,6 @@ class Progress(Base):
     )
 
     # Relationships
-    course: Mapped["Course"] = relationship(back_populates="progress")
-    lesson: Mapped["Lesson"] = relationship(back_populates="progress")
-    user: Mapped["User"] = relationship(back_populates="progress")
+    course: Mapped[Course] = relationship(back_populates="progress")
+    lesson: Mapped[Lesson] = relationship(back_populates="progress")
+    user: Mapped[User] = relationship(back_populates="progress")

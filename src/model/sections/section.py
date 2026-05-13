@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from src.db import Base
 
+if TYPE_CHECKING:
+    from src.model.modules.module import Module
+    from src.model.lessons.lesson import Lesson
+
 
 class Section(Base):
-
     __tablename__ = "sections"
 
     section_id: Mapped[int] = mapped_column(primary_key=True)
@@ -20,5 +27,5 @@ class Section(Base):
     )
 
     # Relationships
-    module: Mapped["Module"] = relationship(back_populates="sections")
-    lessons: Mapped[list["Lesson"]] = relationship(back_populates="section")
+    module: Mapped[Module] = relationship(back_populates="sections")
+    lessons: Mapped[list[Lesson]] = relationship(back_populates="section")

@@ -1,0 +1,39 @@
+name: Python Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'features/**'
+
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'features/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: '3.14^'
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Run tests
+        run: |
+          poetry run pytest

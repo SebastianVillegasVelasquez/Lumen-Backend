@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,7 +12,7 @@ class Settings(BaseSettings):
     declaring it here.
     """
 
-    DATABASE_URL: str
+    DATABASE_URL: Optional[str] = None
 
     # configuration for pydantic_settings
     model_config = SettingsConfigDict(

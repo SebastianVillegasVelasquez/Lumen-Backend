@@ -71,7 +71,7 @@ class UserRepository:
 
         result = await self.db.execute(query)
 
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def get_by_id(self, user_id: int) -> User | None:
         """

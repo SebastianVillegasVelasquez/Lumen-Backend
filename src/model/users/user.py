@@ -1,8 +1,19 @@
+"""User ORM model using SQLAlchemy 2.0+ async patterns."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.base import Base
 from src.enums import UserRole
+
+if TYPE_CHECKING:
+    from src.model.enrollments.enrollment import Enrollment
+    from src.model.courses.course import Course
+    from src.model.progress.progress import Progress
 
 
 class User(Base):
@@ -27,6 +38,6 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(default=True)
 
     # Relationships
-    enrollments: Mapped[list["Enrollment"]] = relationship(back_populates="user")
-    authored_courses: Mapped[list["Course"]] = relationship(back_populates="instructor")
-    progress: Mapped[list["Progress"]] = relationship(back_populates="user")
+    enrollments: Mapped[list[Enrollment]] = relationship(back_populates="user")
+    authored_courses: Mapped[list[Course]] = relationship(back_populates="instructor")
+    progress: Mapped[list[Progress]] = relationship(back_populates="user")

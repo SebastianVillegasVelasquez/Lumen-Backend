@@ -5,24 +5,16 @@ from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from src.core.config import settings
+from src.db.base import Base
 
 # Import the model here to ensure they are registered with Alembic
-from src.model import (
-    User,
-    Course,
-    Module,
-    Section,
-    Lesson,
-    Enrollment,
-    Progress,
-)
 
 """
 The following imports are required for Alembic to work properly.
 Do not change the imports if you are not sure what they do.
 """
-from src.core.config import settings
-from src.db.base import Base
+
 
 config = context.config
 
@@ -31,11 +23,16 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+if not settings.DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable must be set for migrations")
+
 
 def run_migrations_offline() -> None:
-    url = settings.DATABASE_URL
+    database_url = settings.DATABASE_URL
+    if not database_url:
+        raise ValueError("DATABASE_URL is required for offline migrations")
     context.configure(
-        url=url,
+        url=database_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -54,8 +51,13 @@ async def run_async_migrations() -> None:
     # Retrieve the section from the alembic.ini file
     section = config.get_section(config.config_ini_section, {})
 
+    # Validate DATABASE_URL before use
+    database_url = settings.DATABASE_URL
+    if not database_url:
+        raise ValueError("DATABASE_URL is required for async migrations")
+
     # Inject the URL from the .env file into the configuration
-    section["sqlalchemy.url"] = settings.DATABASE_URL
+    section["sqlalchemy.url"] = database_url
 
     connectable = async_engine_from_config(
         section,

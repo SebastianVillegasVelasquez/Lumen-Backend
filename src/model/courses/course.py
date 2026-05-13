@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from sqlalchemy import JSON, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.model import User, Enrollment, Module, Progress
 from src.db import Base
 
 
 class Course(Base):
-
     __tablename__ = "courses"
 
     course_id: Mapped[int] = mapped_column(primary_key=True)
@@ -21,7 +23,7 @@ class Course(Base):
     )
 
     # Relationships
-    instructor: Mapped["User"] = relationship(back_populates="authored_courses")
-    enrollments: Mapped[list["Enrollment"]] = relationship(back_populates="course")
-    modules: Mapped[list["Module"]] = relationship(back_populates="course")
-    progress: Mapped[list["Progress"]] = relationship(back_populates="course")
+    instructor: Mapped[User] = relationship(back_populates="authored_courses")
+    enrollments: Mapped[list[Enrollment]] = relationship(back_populates="course")
+    modules: Mapped[list[Module]] = relationship(back_populates="course")
+    progress: Mapped[list[Progress]] = relationship(back_populates="course")
